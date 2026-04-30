@@ -13,12 +13,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
 @Table(name = "agendamento")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Agendamento {
 
     @Id
@@ -53,8 +58,6 @@ public class Agendamento {
     @Column(name = "criado_em", nullable = false, updatable = false, insertable = false)
     private LocalDateTime criadoEm;
 
-    protected Agendamento() { }
-
     public Agendamento(Paciente paciente, Profissional profissional,
                        LocalDateTime dataHora, TipoAtendimento tipoAtendimento) {
         this.paciente = paciente;
@@ -73,16 +76,6 @@ public class Agendamento {
         this.canceladoEm = LocalDateTime.now();
     }
 
-    public Long getId() { return id; }
-    public Paciente getPaciente() { return paciente; }
-    public Profissional getProfissional() { return profissional; }
-    public LocalDateTime getDataHora() { return dataHora; }
-    public TipoAtendimento getTipoAtendimento() { return tipoAtendimento; }
-    public StatusAgendamento getStatus() { return status; }
-    public String getMotivoCancelamento() { return motivoCancelamento; }
-    public LocalDateTime getCanceladoEm() { return canceladoEm; }
-    public LocalDateTime getCriadoEm() { return criadoEm; }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -91,5 +84,7 @@ public class Agendamento {
     }
 
     @Override
-    public int hashCode() { return Objects.hash(id); }
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

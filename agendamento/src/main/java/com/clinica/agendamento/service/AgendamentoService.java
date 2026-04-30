@@ -43,9 +43,6 @@ public class AgendamentoService {
 
     @Transactional
     public AgendamentoResponse criar(AgendamentoRequest req) {
-        // Regra: nao permitir data/hora no passado.
-        // (@Future no DTO ja barra, mas validamos aqui tambem para garantir
-        //  consistencia mesmo se o servico for chamado por outro caminho.)
         if (!req.dataHora().isAfter(LocalDateTime.now(clock))) {
             throw new BusinessException("Data e hora do agendamento devem estar no futuro");
         }
@@ -58,25 +55,22 @@ public class AgendamentoService {
                 .orElseThrow(() -> new NotFoundException(
                         "Profissional " + req.profissionalId() + " nao encontrado"));
 
-        // Regra: profissional nao pode ter dois agendamentos ATIVOS no mesmo horario.
-        // Checagem otimista no servico (mensagem amigavel para o caso comum)...
+        // Defesa em camadas: existsBy aqui da mensagem amigavel no caso comum;
+        // o indice unico no banco (try/catch abaixo) fecha a janela de race condition.
         boolean ocupado = agendamentoRepository
                 .existsByProfissionalIdAndDataHoraAndStatusNot(
                         profissional.getId(), req.dataHora(), StatusAgendamento.CANCELADO);
         if (ocupado) {
-            throw new ConflictException(
-                    "Profissional ja possui agendamento neste horario");
+            throw new ConflictException("Profissional ja possui agendamento neste horario");
         }
 
         Agendamento agendamento = new Agendamento(
                 paciente, profissional, req.dataHora(), req.tipoAtendimento());
 
         try {
-            // ...e o indice unico no banco fecha a janela de race condition.
             return AgendamentoResponse.from(agendamentoRepository.saveAndFlush(agendamento));
         } catch (DataIntegrityViolationException e) {
-            throw new ConflictException(
-                    "Profissional ja possui agendamento neste horario");
+            throw new ConflictException("Profissional ja possui agendamento neste horario");
         }
     }
 

@@ -6,6 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +16,8 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "paciente")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Paciente {
 
     @Id
@@ -37,8 +42,6 @@ public class Paciente {
     @Column(name = "criado_em", nullable = false, updatable = false, insertable = false)
     private LocalDateTime criadoEm;
 
-    protected Paciente() { }
-
     public Paciente(String nome, String cpf, String email, String telefone, LocalDate dataNascimento) {
         this.nome = nome;
         this.cpf = cpf;
@@ -47,14 +50,7 @@ public class Paciente {
         this.dataNascimento = dataNascimento;
     }
 
-    public Long getId() { return id; }
-    public String getNome() { return nome; }
-    public String getCpf() { return cpf; }
-    public String getEmail() { return email; }
-    public String getTelefone() { return telefone; }
-    public LocalDate getDataNascimento() { return dataNascimento; }
-    public LocalDateTime getCriadoEm() { return criadoEm; }
-
+    // equals/hashCode manuais: @EqualsAndHashCode do Lombok inclui todos os campos por default e quebra JPA (id muda no flush).
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -63,5 +59,7 @@ public class Paciente {
     }
 
     @Override
-    public int hashCode() { return Objects.hash(id); }
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

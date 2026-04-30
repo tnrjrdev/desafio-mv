@@ -7,6 +7,7 @@
 - **Maven Wrapper** — projeto roda sem Maven instalado.
 - **H2 como banco padrão de dev, Oracle compatível via perfil** — atende o requisito mínimo (banco relacional) e o diferencial (Oracle), sem exigir infraestrutura para o avaliador rodar.
 - **Flyway** — migrations versionadas. Mostro maturidade e mantém o schema sob controle desde o primeiro commit.
+- **Lombok** — aplicado nas entidades (`@Getter`, `@NoArgsConstructor`) para reduzir boilerplate sem prejudicar a clareza. Optei por **manter `equals/hashCode` manuais** porque o `@EqualsAndHashCode` do Lombok, por padrão, usa todos os campos — o que quebra entidades JPA (o hashCode muda quando o `id` é atribuído no flush). O Lombok está configurado como `optional` no Maven e excluído do JAR final via `spring-boot-maven-plugin`.
 
 ### Arquitetura
 - **Camadas clássicas:** `controller → service → repository → domain`. Para um CRUD pequeno, hexagonal/clean architecture seria overengineering.
