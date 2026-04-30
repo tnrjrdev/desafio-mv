@@ -1,0 +1,19 @@
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Build outputs (handled também por gitignores aninhados)
+target/
+node_modules/
+dist/
+.vite/
