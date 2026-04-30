@@ -9,11 +9,11 @@ Desenvolvida como parte do desafio técnico para a vaga de Desenvolvedor Júnior
 ## Stack
 
 - **Java 17** + **Spring Boot 3.5**
-- **Spring Web**, **Spring Data JPA**, **Bean Validation**
+- **Spring Web**, **Spring Data JPA**, **Bean Validation**, **Lombok**
+- **Oracle 21c** (XE) — banco de produção/dev
 - **Flyway** para versionamento de schema
-- **H2** em memória (perfil `h2`, padrão) e **Oracle** (perfil `oracle`)
 - **Springdoc OpenAPI** (Swagger UI)
-- **JUnit 5** + **Mockito** + **MockMvc** para testes
+- **JUnit 5** + **Mockito** + **MockMvc** para testes (com H2 in-memory em escopo `test`)
 - **Maven Wrapper** (`mvnw`) — não precisa ter Maven instalado
 
 ---
@@ -22,8 +22,32 @@ Desenvolvida como parte do desafio técnico para a vaga de Desenvolvedor Júnior
 
 ### Pré-requisitos
 - Java 17 ou superior
+- Docker + Docker Compose (para subir o Oracle)
 
-### Rodar com H2 (modo padrão — não precisa de banco)
+### 1. Subir o banco Oracle via Docker Compose
+
+Na pasta do backend (`agendamento/`):
+
+```bash
+cd agendamento
+docker compose up -d
+```
+
+A primeira execução baixa a imagem (~700MB) e inicializa o banco — leva ~1 minuto. Acompanhe com:
+
+```bash
+docker compose logs -f oracle
+```
+
+Quando aparecer `DATABASE IS READY TO USE!`, está pronto.
+
+Conexão:
+- **JDBC URL:** `jdbc:oracle:thin:@localhost:1521/XEPDB1`
+- **Usuário:** `system`
+- **Senha:** `oracle`
+
+### 2. Rodar a aplicação
+
 ```bash
 ./mvnw spring-boot:run
 ```
@@ -32,23 +56,20 @@ A aplicação sobe em `http://localhost:8080`.
 
 - **Swagger UI:** http://localhost:8080/swagger-ui.html
 - **OpenAPI JSON:** http://localhost:8080/v3/api-docs
-- **H2 Console:** http://localhost:8080/h2-console
-  (JDBC URL: `jdbc:h2:mem:agendamento`, user: `sa`, sem senha)
 
-### Rodar com Oracle
-1. Suba um Oracle XE local (ex: via Docker):
-   ```bash
-   docker run -d -p 1521:1521 -e ORACLE_PASSWORD=oracle gvenzl/oracle-xe:21-slim-faststart
-   ```
-2. Inicie a aplicação no perfil `oracle`:
-   ```bash
-   ./mvnw spring-boot:run -Dspring-boot.run.profiles=oracle
-   ```
-   Variáveis disponíveis: `DB_USER` (default `system`), `DB_PASSWORD` (default `oracle`).
+### 3. Rodar os testes
 
-### Rodar os testes
+Os testes usam H2 em memória (escopo `test`), então **não dependem** do Docker:
+
 ```bash
 ./mvnw test
+```
+
+### 4. Parar o banco
+
+```bash
+docker compose down            # mantém os dados no volume
+docker compose down -v         # remove os dados também
 ```
 
 ---
@@ -127,18 +148,19 @@ curl -X PATCH http://localhost:8080/api/agendamentos/1/cancelar \
 
 ```
 src/main/java/com/clinica/agendamento/
-├── domain/         entidades JPA + enums
+├── domain/         entidades JPA
+│   └── enums/      StatusAgendamento, TipoAtendimento
 ├── dto/            request/response (records)
 ├── repository/     Spring Data + Specifications
 ├── service/        regras de negócio
 ├── controller/     endpoints REST
 ├── exception/      exceptions de domínio + handler global
-└── config/         OpenAPI, Clock
+└── config/         OpenAPI, Clock, CORS
 
 src/main/resources/db/migration/
-├── common/         migrations compatíveis (V1 schema, V3 seed)
-├── h2/             V2 índice único via coluna gerada
-└── oracle/         V2 índice único function-based
+├── common/         migrations compartilhadas (V3 seed)
+├── h2/             V1 schema + V2 índice (apenas testes)
+└── oracle/         V1 schema + V2 índice (produção/dev)
 ```
 
 Veja **[DECISOES.md](DECISOES.md)** para o racional das principais decisões técnicas.

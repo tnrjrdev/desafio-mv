@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * que o stack inteiro funciona junto, incluindo Flyway e Bean Validation.
  */
 @SpringBootTest
-@ActiveProfiles("h2")
+@ActiveProfiles("test")
 @Transactional
 class AgendamentoIntegrationTest {
 

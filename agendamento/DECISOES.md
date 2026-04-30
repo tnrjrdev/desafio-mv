@@ -5,7 +5,7 @@
 ### Stack
 - **Spring Boot 3.5 / Java 17** — stack atual, LTS, padrão de mercado e da própria MV.
 - **Maven Wrapper** — projeto roda sem Maven instalado.
-- **H2 como banco padrão de dev, Oracle compatível via perfil** — atende o requisito mínimo (banco relacional) e o diferencial (Oracle), sem exigir infraestrutura para o avaliador rodar.
+- **Oracle 21c como banco de produção/dev, com `docker-compose.yml` na pasta do backend para subir local.** H2 é usado **apenas em escopo `test`** (Maven `<scope>test</scope>`) para tests rodarem em segundos sem dependência de Docker. É padrão de mercado em projetos Spring corporativos: produção fala com o banco real; testes usam in-memory pra velocidade.
 - **Flyway** — migrations versionadas. Mostro maturidade e mantém o schema sob controle desde o primeiro commit.
 - **Lombok** — aplicado nas entidades (`@Getter`, `@NoArgsConstructor`) para reduzir boilerplate sem prejudicar a clareza. Optei por **manter `equals/hashCode` manuais** porque o `@EqualsAndHashCode` do Lombok, por padrão, usa todos os campos — o que quebra entidades JPA (o hashCode muda quando o `id` é atribuído no flush). O Lombok está configurado como `optional` no Maven e excluído do JAR final via `spring-boot-maven-plugin`.
 
@@ -35,11 +35,11 @@
 ### Filtros dinâmicos
 - `JpaSpecificationExecutor` + `Specification` para os filtros opcionais (paciente/profissional/status). Mais limpo que escrever 7 métodos `findByXAndY...` ou montar JPQL string.
 
-### Compatibilidade H2 ↔ Oracle
-Optei por **migrations totalmente separadas por banco** (`db/migration/h2/` e `db/migration/oracle/`) ao invés de buscar uma sintaxe "comum":
+### Migrations Oracle (produção) e H2 (testes)
+**Migrations totalmente separadas por banco** (`db/migration/oracle/` para produção, `db/migration/h2/` para testes), ao invés de buscar uma sintaxe "comum":
 
-- **V1 (schema):** H2 usa `BIGINT` + `VARCHAR`; Oracle usa `NUMBER(19,0)` + `VARCHAR2`. Tentei inicialmente um único V1 com `BIGINT`, mas o Oracle 21c rejeita `BIGINT` em colunas `IDENTITY` (`ORA-30675`) — embora aceite como coluna comum. A lição: portabilidade SQL entre bancos é uma ilusão em features avançadas (IDENTITY, function-based index).
-- **V2 (índice único parcial):** H2 não suporta expressões em `CREATE INDEX`, então uso **coluna gerada** codificando `(profissional_id, data_hora)` para registros não-cancelados; Oracle usa **function-based index** com `DECODE`. Mesma semântica, sintaxe diferente.
+- **V1 (schema):** Oracle usa `NUMBER(19,0)` + `VARCHAR2`; H2 (testes) usa `BIGINT` + `VARCHAR`. Tentei inicialmente um único V1 com `BIGINT`, mas o Oracle 21c rejeita `BIGINT` em colunas `IDENTITY` (`ORA-30675`) — embora aceite como coluna comum. A lição: portabilidade SQL entre bancos é uma ilusão em features avançadas (IDENTITY, function-based index).
+- **V2 (índice único parcial):** Oracle usa **function-based index** com `DECODE`; H2 (testes) não suporta expressões em `CREATE INDEX`, então uso **coluna gerada** codificando `(profissional_id, data_hora)` para registros não-cancelados. Mesma semântica, sintaxe diferente.
 - **V3 (seed):** comum, porque `INSERT` é portátil.
 
 ---
