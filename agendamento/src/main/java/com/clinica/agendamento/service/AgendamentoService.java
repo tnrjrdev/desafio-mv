@@ -3,7 +3,7 @@ package com.clinica.agendamento.service;
 import com.clinica.agendamento.domain.Agendamento;
 import com.clinica.agendamento.domain.Paciente;
 import com.clinica.agendamento.domain.Profissional;
-import com.clinica.agendamento.domain.StatusAgendamento;
+import com.clinica.agendamento.domain.enums.StatusAgendamento;
 import com.clinica.agendamento.dto.AgendamentoRequest;
 import com.clinica.agendamento.dto.AgendamentoResponse;
 import com.clinica.agendamento.dto.CancelamentoRequest;

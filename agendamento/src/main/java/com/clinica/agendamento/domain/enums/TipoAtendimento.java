@@ -1,4 +1,4 @@
-package com.clinica.agendamento.domain;
+package com.clinica.agendamento.domain.enums;
 
 public enum TipoAtendimento {
     CONSULTA,

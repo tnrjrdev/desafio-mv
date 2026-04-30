@@ -1,7 +1,7 @@
 package com.clinica.agendamento.repository;
 
 import com.clinica.agendamento.domain.Agendamento;
-import com.clinica.agendamento.domain.StatusAgendamento;
+import com.clinica.agendamento.domain.enums.StatusAgendamento;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

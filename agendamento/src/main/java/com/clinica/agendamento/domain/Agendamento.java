@@ -1,5 +1,7 @@
 package com.clinica.agendamento.domain;
 
+import com.clinica.agendamento.domain.enums.StatusAgendamento;
+import com.clinica.agendamento.domain.enums.TipoAtendimento;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

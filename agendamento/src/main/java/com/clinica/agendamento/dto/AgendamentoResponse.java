@@ -1,8 +1,8 @@
 package com.clinica.agendamento.dto;
 
 import com.clinica.agendamento.domain.Agendamento;
-import com.clinica.agendamento.domain.StatusAgendamento;
-import com.clinica.agendamento.domain.TipoAtendimento;
+import com.clinica.agendamento.domain.enums.StatusAgendamento;
+import com.clinica.agendamento.domain.enums.TipoAtendimento;
 
 import java.time.LocalDateTime;
 

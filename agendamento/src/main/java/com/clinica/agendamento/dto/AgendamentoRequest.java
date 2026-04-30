@@ -1,6 +1,6 @@
 package com.clinica.agendamento.dto;
 
-import com.clinica.agendamento.domain.TipoAtendimento;
+import com.clinica.agendamento.domain.enums.TipoAtendimento;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 

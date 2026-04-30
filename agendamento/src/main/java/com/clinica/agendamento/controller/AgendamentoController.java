@@ -1,6 +1,6 @@
 package com.clinica.agendamento.controller;
 
-import com.clinica.agendamento.domain.StatusAgendamento;
+import com.clinica.agendamento.domain.enums.StatusAgendamento;
 import com.clinica.agendamento.dto.AgendamentoRequest;
 import com.clinica.agendamento.dto.AgendamentoResponse;
 import com.clinica.agendamento.dto.CancelamentoRequest;
